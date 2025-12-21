@@ -17,8 +17,10 @@ import Animated, {
   withSpring,
   withSequence,
   withTiming,
+  withRepeat,
+  Easing,
 } from "react-native-reanimated";
-import { useBoardGame } from "../hooks/useBoardGame";
+import { MAX_TILES, useBoardGame } from "../hooks/useBoardGame";
 
 type RootStackParamList = {
   Home: undefined;
@@ -29,7 +31,7 @@ type RootStackParamList = {
 type GameScreenRouteProp = RouteProp<RootStackParamList, "Game">;
 
 const { width } = Dimensions.get("window");
-const TILE_SIZE = (width - 32) / 5; // 5 columns
+const TILE_SIZE = (width - 32) / 11; // 10 columns for 100 tiles
 
 export default function GameScreen() {
   const navigation =
@@ -37,7 +39,8 @@ export default function GameScreen() {
   const route = useRoute<GameScreenRouteProp>();
   const { player1, player2 } = route.params;
 
-  const { gameState, startGame, rollDice, completeTask } = useBoardGame();
+  const { gameState, startGame, rollDice, moveOneStep, completeTask } =
+    useBoardGame();
 
   // Initialize game on mount
   useEffect(() => {
@@ -51,21 +54,42 @@ export default function GameScreen() {
     }
   }, [gameState.winner, navigation]);
 
+  // Movement Animation Loop
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (gameState.status === "moving") {
+      interval = setInterval(() => {
+        moveOneStep();
+      }, 400); // Move every 400ms
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [gameState.status, moveOneStep]);
+
   // Dice Animation
   const diceScale = useSharedValue(1);
   const diceRotation = useSharedValue(0);
 
   const handleRoll = () => {
+    // Enhanced dice animation
     diceScale.value = withSequence(
-      withTiming(0.8, { duration: 100 }),
-      withSpring(1.2),
+      withTiming(0.5, { duration: 200 }),
+      withTiming(1.5, { duration: 200 }),
       withSpring(1)
     );
     diceRotation.value = withSequence(
-      withTiming(360, { duration: 500 }),
+      withTiming(720, {
+        duration: 800,
+        easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+      }),
       withTiming(0, { duration: 0 })
     );
-    rollDice();
+
+    // Delay actual roll logic slightly to match animation
+    setTimeout(() => {
+      rollDice();
+    }, 500);
   };
 
   const diceAnimatedStyle = useAnimatedStyle(() => {
@@ -80,7 +104,7 @@ export default function GameScreen() {
   // Render Board
   const renderBoard = () => {
     const tiles = [];
-    for (let i = 50; i >= 1; i--) {
+    for (let i = MAX_TILES; i >= 1; i--) {
       tiles.push(i);
     }
 
@@ -90,13 +114,10 @@ export default function GameScreen() {
           const isP1Here = gameState.positions[0] === tileNumber;
           const isP2Here = gameState.positions[1] === tileNumber;
 
-          // Determine row for snake pattern (optional, but simple grid is easier for now)
-          // Let's just do simple grid for MVP
-
           let backgroundColor = "#ecf0f1";
-          if (tileNumber <= 10) backgroundColor = "#dff9fb"; // Warmup
-          else if (tileNumber <= 25) backgroundColor = "#fef9e7"; // Personal
-          else if (tileNumber <= 40) backgroundColor = "#fdedec"; // Bold
+          if (tileNumber <= 25) backgroundColor = "#dff9fb"; // Warmup
+          else if (tileNumber <= 50) backgroundColor = "#fef9e7"; // Personal
+          else if (tileNumber <= 75) backgroundColor = "#fdedec"; // Bold
           else backgroundColor = "#e8f8f5"; // Final
 
           return (
@@ -163,7 +184,9 @@ export default function GameScreen() {
             <Text style={styles.diceEmoji}>🎲</Text>
           </Animated.View>
           <Text style={styles.rollButtonText}>
-            {gameState.diceValue
+            {gameState.status === "moving"
+              ? "Moving..."
+              : gameState.diceValue
               ? `Rolled: ${gameState.diceValue}`
               : "Roll Dice"}
           </Text>
@@ -248,20 +271,20 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   tileNumber: {
-    fontSize: 10,
+    fontSize: 8,
     color: "#95a5a6",
     position: "absolute",
-    top: 2,
-    left: 2,
+    top: 1,
+    left: 1,
   },
   tokenContainer: {
     flexDirection: "row",
-    gap: 4,
+    gap: 2,
   },
   token: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
+    width: 10,
+    height: 10,
+    borderRadius: 5,
     borderWidth: 1,
     borderColor: "#fff",
   },

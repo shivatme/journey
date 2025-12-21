@@ -1,11 +1,12 @@
 import { useState, useCallback } from "react";
 import { GameTask, getTaskForTile, PENALTY_TILES } from "../data/tasks";
 
-export type GameStatus = "setup" | "playing" | "task" | "finished";
+export type GameStatus = "setup" | "playing" | "moving" | "task" | "finished";
 
 export interface GameState {
   players: [string, string];
   positions: [number, number];
+  targetPosition: number | null; // Target position for animation
   currentPlayerIndex: number;
   diceValue: number | null;
   status: GameStatus;
@@ -13,10 +14,13 @@ export interface GameState {
   winner: string | null;
 }
 
+export const MAX_TILES = 100;
+
 export const useBoardGame = () => {
   const [gameState, setGameState] = useState<GameState>({
     players: ["", ""],
     positions: [1, 1],
+    targetPosition: null,
     currentPlayerIndex: 0,
     diceValue: null,
     status: "setup",
@@ -28,6 +32,7 @@ export const useBoardGame = () => {
     setGameState({
       players: [player1, player2],
       positions: [1, 1],
+      targetPosition: null,
       currentPlayerIndex: 0,
       diceValue: null,
       status: "playing",
@@ -44,29 +49,57 @@ export const useBoardGame = () => {
     const currentPos = gameState.positions[currentPlayer];
     let newPos = currentPos + roll;
 
-    // Cap at 50
-    if (newPos >= 50) {
-      newPos = 50;
+    // Cap at MAX_TILES
+    if (newPos >= MAX_TILES) {
+      newPos = MAX_TILES;
     }
 
     setGameState((prev) => ({
       ...prev,
       diceValue: roll,
-      positions:
-        currentPlayer === 0
-          ? [newPos, prev.positions[1]]
-          : [prev.positions[0], newPos],
-      status: "task", // Trigger task immediately after move
-      currentTask: getTaskForTile(newPos),
+      targetPosition: newPos,
+      status: "moving", // Start movement animation
+      currentTask: null,
     }));
   }, [gameState.status, gameState.currentPlayerIndex, gameState.positions]);
+
+  const moveOneStep = useCallback(() => {
+    setGameState((prev) => {
+      if (prev.status !== "moving" || prev.targetPosition === null) return prev;
+
+      const currentPlayer = prev.currentPlayerIndex;
+      const currentPos = prev.positions[currentPlayer];
+
+      // If we reached the target
+      if (currentPos === prev.targetPosition) {
+        // Trigger task
+        return {
+          ...prev,
+          status: "task",
+          currentTask: getTaskForTile(currentPos),
+          targetPosition: null,
+        };
+      }
+
+      // Move one step forward
+      const nextPos = currentPos + 1;
+
+      return {
+        ...prev,
+        positions:
+          currentPlayer === 0
+            ? [nextPos, prev.positions[1]]
+            : [prev.positions[0], nextPos],
+      };
+    });
+  }, []);
 
   const completeTask = useCallback(() => {
     const currentPlayer = gameState.currentPlayerIndex;
     let currentPos = gameState.positions[currentPlayer];
 
     // Check for win condition
-    if (currentPos === 50) {
+    if (currentPos === MAX_TILES) {
       setGameState((prev) => ({
         ...prev,
         status: "finished",
@@ -76,9 +109,7 @@ export const useBoardGame = () => {
       return;
     }
 
-    // Check for penalty AFTER task is done (or during? I'll do it after for simplicity, or maybe the task WAS the penalty)
-    // If the current tile was a penalty tile, we move them back now.
-    // The task text for penalty tiles says "Go back X spaces".
+    // Check for penalty
     if (PENALTY_TILES[currentPos]) {
       const penalty = PENALTY_TILES[currentPos];
       let afterPenaltyPos = currentPos + penalty;
@@ -111,6 +142,7 @@ export const useBoardGame = () => {
     setGameState({
       players: ["", ""],
       positions: [1, 1],
+      targetPosition: null,
       currentPlayerIndex: 0,
       diceValue: null,
       status: "setup",
@@ -123,6 +155,7 @@ export const useBoardGame = () => {
     gameState,
     startGame,
     rollDice,
+    moveOneStep,
     completeTask,
     resetGame,
   };
