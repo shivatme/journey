@@ -13,6 +13,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 type RootStackParamList = {
   Game: { player1: string; player2: string };
+  DareSetup: undefined;
 };
 
 export default function HomeScreen() {
@@ -59,6 +60,15 @@ export default function HomeScreen() {
 
         <TouchableOpacity style={styles.button} onPress={handleStart}>
           <Text style={styles.buttonText}>Start Game</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.button, styles.secondaryButton]}
+          onPress={() => navigation.navigate("DareSetup")}
+        >
+          <Text style={[styles.buttonText, styles.secondaryButtonText]}>
+            Add Custom Dares
+          </Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -122,9 +132,20 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 5,
   },
+  secondaryButton: {
+    backgroundColor: "#fff",
+    borderWidth: 2,
+    borderColor: "#e74c3c",
+    marginTop: 16,
+    shadowColor: "transparent",
+    elevation: 0,
+  },
   buttonText: {
     fontSize: 18,
     fontWeight: "bold",
     color: "#fff",
+  },
+  secondaryButtonText: {
+    color: "#e74c3c",
   },
 });

@@ -1,12 +1,13 @@
 import { useState, useCallback } from "react";
 import { GameTask, getTaskForTile, PENALTY_TILES } from "../data/tasks";
+import { useDares } from "../context/DareContext";
 
 export type GameStatus = "setup" | "playing" | "moving" | "task" | "finished";
 
 export interface GameState {
   players: [string, string];
   positions: [number, number];
-  targetPosition: number | null; // Target position for animation
+  targetPosition: number | null;
   currentPlayerIndex: number;
   diceValue: number | null;
   status: GameStatus;
@@ -17,6 +18,7 @@ export interface GameState {
 export const MAX_TILES = 100;
 
 export const useBoardGame = () => {
+  const { customDares } = useDares();
   const [gameState, setGameState] = useState<GameState>({
     players: ["", ""],
     positions: [1, 1],
@@ -49,7 +51,6 @@ export const useBoardGame = () => {
     const currentPos = gameState.positions[currentPlayer];
     let newPos = currentPos + roll;
 
-    // Cap at MAX_TILES
     if (newPos >= MAX_TILES) {
       newPos = MAX_TILES;
     }
@@ -58,7 +59,7 @@ export const useBoardGame = () => {
       ...prev,
       diceValue: roll,
       targetPosition: newPos,
-      status: "moving", // Start movement animation
+      status: "moving",
       currentTask: null,
     }));
   }, [gameState.status, gameState.currentPlayerIndex, gameState.positions]);
@@ -70,18 +71,38 @@ export const useBoardGame = () => {
       const currentPlayer = prev.currentPlayerIndex;
       const currentPos = prev.positions[currentPlayer];
 
-      // If we reached the target
       if (currentPos === prev.targetPosition) {
         // Trigger task
+        let task = getTaskForTile(currentPos);
+
+        // Logic to mix in custom dares
+        // If we have custom dares, 50% chance to replace the default task (unless it's a penalty or special tile)
+        // Let's say we only replace 'warmup', 'personal', 'bold' tasks, not 'final' or penalties.
+        if (
+          customDares.length > 0 &&
+          !PENALTY_TILES[currentPos] &&
+          task.category !== "final"
+        ) {
+          const useCustom = Math.random() < 0.5;
+          if (useCustom) {
+            const randomDare =
+              customDares[Math.floor(Math.random() * customDares.length)];
+            task = {
+              ...task,
+              text: randomDare,
+              category: "bold", // Default custom dares to 'bold' or keep original category? Let's say 'bold' for fun.
+            };
+          }
+        }
+
         return {
           ...prev,
           status: "task",
-          currentTask: getTaskForTile(currentPos),
+          currentTask: task,
           targetPosition: null,
         };
       }
 
-      // Move one step forward
       const nextPos = currentPos + 1;
 
       return {
@@ -92,13 +113,12 @@ export const useBoardGame = () => {
             : [prev.positions[0], nextPos],
       };
     });
-  }, []);
+  }, [customDares]); // Add customDares to dependency
 
   const completeTask = useCallback(() => {
     const currentPlayer = gameState.currentPlayerIndex;
     let currentPos = gameState.positions[currentPlayer];
 
-    // Check for win condition
     if (currentPos === MAX_TILES) {
       setGameState((prev) => ({
         ...prev,
@@ -109,7 +129,6 @@ export const useBoardGame = () => {
       return;
     }
 
-    // Check for penalty
     if (PENALTY_TILES[currentPos]) {
       const penalty = PENALTY_TILES[currentPos];
       let afterPenaltyPos = currentPos + penalty;
@@ -127,7 +146,6 @@ export const useBoardGame = () => {
         diceValue: null,
       }));
     } else {
-      // Normal turn end
       setGameState((prev) => ({
         ...prev,
         status: "playing",

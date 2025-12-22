@@ -2,12 +2,15 @@ import React from "react";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import AppNavigator from "./src/navigation/AppNavigator";
+import { DareProvider } from "./src/context/DareContext";
 
 export default function App() {
   return (
     <SafeAreaProvider>
-      <StatusBar style="auto" />
-      <AppNavigator />
+      <DareProvider>
+        <StatusBar style="auto" />
+        <AppNavigator />
+      </DareProvider>
     </SafeAreaProvider>
   );
 }
