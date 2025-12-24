@@ -130,9 +130,20 @@ export const useBoardGame = () => {
     }
 
     if (PENALTY_TILES[currentPos]) {
-      const penalty = PENALTY_TILES[currentPos];
-      let afterPenaltyPos = currentPos + penalty;
+      // Logic for penalty: random fallback 1 step OR random up to 50 places
+      const isSevere = Math.random() < 0.5; // 50% chance for severe penalty
+      let penaltySteps = 1;
+
+      if (isSevere) {
+        penaltySteps = Math.floor(Math.random() * 50) + 1; // 1 to 50 steps back
+      }
+
+      let afterPenaltyPos = currentPos - penaltySteps;
       if (afterPenaltyPos < 1) afterPenaltyPos = 1;
+
+      // Update to use a specific message for what happened?
+      // ideally we would show a toast or modal saying "Oops! Fell back X steps"
+      // but for now just move them.
 
       setGameState((prev) => ({
         ...prev,

@@ -10,7 +10,16 @@ export const PENALTY_TILES: Record<number, number> = {
   6: -5,
   14: -10,
   27: -5,
-  36: -10,
+  31: -5,
+  39: -10,
+  45: -7,
+  59: -23,
+  64: -3,
+  73: -32,
+  80: -18,
+  86: -27,
+  89: -10,
+  98: -42,
 };
 
 const TASKS: GameTask[] = [

@@ -21,6 +21,7 @@ import Animated, {
   Easing,
 } from "react-native-reanimated";
 import { MAX_TILES, useBoardGame } from "../hooks/useBoardGame";
+import { PENALTY_TILES } from "../data/tasks";
 
 type RootStackParamList = {
   Home: undefined;
@@ -115,14 +116,22 @@ export default function GameScreen() {
           const isP2Here = gameState.positions[1] === tileNumber;
 
           let backgroundColor = "#ecf0f1";
-          if (tileNumber <= 25) backgroundColor = "#dff9fb"; // Warmup
+          let isPenalty = false;
+
+          // Check if key exists in PENALTY_TILES (keys are strings in Object.keys but numbers in index access)
+          if (PENALTY_TILES[tileNumber] !== undefined) {
+            isPenalty = true;
+            backgroundColor = "#ffebee"; // Light red for penalty
+          } else if (tileNumber <= 25) backgroundColor = "#dff9fb"; // Warmup
           else if (tileNumber <= 50) backgroundColor = "#fef9e7"; // Personal
           else if (tileNumber <= 75) backgroundColor = "#fdedec"; // Bold
           else backgroundColor = "#e8f8f5"; // Final
 
           return (
             <View key={tileNumber} style={[styles.tile, { backgroundColor }]}>
-              <Text style={styles.tileNumber}>{tileNumber}</Text>
+              <Text style={styles.tileNumber}>
+                {tileNumber} {isPenalty && "⚠️"}
+              </Text>
               <View style={styles.tokenContainer}>
                 {isP1Here && (
                   <View
