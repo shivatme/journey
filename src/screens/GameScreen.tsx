@@ -58,15 +58,18 @@ export default function GameScreen() {
 
   // Audio Player
   const player = useAudioPlayer(require("../../assets/pop.mp3"));
-
+  const dice = useAudioPlayer(require("../../assets/dice.mp3"));
+  player.setPlaybackRate(2);
   // Movement Animation Loop
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (gameState.status === "moving") {
       interval = setInterval(() => {
+        player.seekTo(0);
+        player.volume = 0.3;
         player.play();
         moveOneStep();
-      }, 400); // Move every 400ms
+      }, 300); // Move every 300ms
     }
     return () => {
       if (interval) clearInterval(interval);
@@ -79,6 +82,9 @@ export default function GameScreen() {
 
   const handleRoll = () => {
     // Enhanced dice animation
+    dice.seekTo(0);
+    dice.volume = 0.3;
+    dice.play();
     diceScale.value = withSequence(
       withTiming(0.5, { duration: 200 }),
       withTiming(1.5, { duration: 200 }),
