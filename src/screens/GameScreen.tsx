@@ -22,6 +22,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { MAX_TILES, useBoardGame } from "../hooks/useBoardGame";
 import { PENALTY_TILES } from "../data/tasks";
+import { useAudioPlayer } from "expo-audio";
 
 type RootStackParamList = {
   Home: undefined;
@@ -55,18 +56,22 @@ export default function GameScreen() {
     }
   }, [gameState.winner, navigation]);
 
+  // Audio Player
+  const player = useAudioPlayer(require("../../assets/pop.mp3"));
+
   // Movement Animation Loop
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (gameState.status === "moving") {
       interval = setInterval(() => {
+        player.play();
         moveOneStep();
       }, 400); // Move every 400ms
     }
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [gameState.status, moveOneStep]);
+  }, [gameState.status, moveOneStep, player]);
 
   // Dice Animation
   const diceScale = useSharedValue(1);
