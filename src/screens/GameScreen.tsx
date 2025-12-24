@@ -4,7 +4,6 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  Modal,
   ScrollView,
   Dimensions,
 } from "react-native";
@@ -192,39 +191,12 @@ export default function GameScreen() {
       <ScrollView style={styles.boardContainer}>{renderBoard()}</ScrollView>
 
       <View style={styles.controls}>
-        <TouchableOpacity
-          onPress={handleRoll}
-          disabled={gameState.status !== "playing"}
-          style={[
-            styles.rollButton,
-            gameState.status !== "playing" && styles.disabledButton,
-          ]}
-        >
-          <Animated.View style={diceAnimatedStyle}>
-            <Text style={styles.diceEmoji}>🎲</Text>
-          </Animated.View>
-          <Text style={styles.rollButtonText}>
-            {gameState.status === "moving"
-              ? "Moving..."
-              : gameState.diceValue
-              ? `Rolled: ${gameState.diceValue}`
-              : "Roll Dice"}
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Task Modal */}
-      <Modal
-        visible={!!gameState.currentTask}
-        transparent={true}
-        animationType="slide"
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>
-              {gameState.currentTask?.category.toUpperCase()}
+        {gameState.currentTask ? (
+          <View style={styles.taskContainer}>
+            <Text style={styles.taskTitle}>
+              {gameState.currentTask.category}
             </Text>
-            <Text style={styles.modalText}>{gameState.currentTask?.text}</Text>
+            <Text style={styles.taskText}>{gameState.currentTask.text}</Text>
             <TouchableOpacity
               style={styles.completeButton}
               onPress={completeTask}
@@ -232,8 +204,31 @@ export default function GameScreen() {
               <Text style={styles.completeButtonText}>Complete Task</Text>
             </TouchableOpacity>
           </View>
-        </View>
-      </Modal>
+        ) : (
+          <>
+            {!!gameState.diceValue && (
+              <Text style={styles.diceValueDisplay}>
+                Rolled: {gameState.diceValue}
+              </Text>
+            )}
+            <TouchableOpacity
+              onPress={handleRoll}
+              disabled={gameState.status !== "playing"}
+              style={[
+                styles.rollButton,
+                gameState.status !== "playing" && styles.disabledButton,
+              ]}
+            >
+              <Animated.View style={diceAnimatedStyle}>
+                <Text style={styles.diceEmoji}>🎲</Text>
+              </Animated.View>
+              <Text style={styles.rollButtonText}>
+                {gameState.status === "moving" ? "Moving..." : "Roll Dice"}
+              </Text>
+            </TouchableOpacity>
+          </>
+        )}
+      </View>
     </SafeAreaView>
   );
 }
@@ -313,6 +308,8 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: "#eee",
     alignItems: "center",
+    minHeight: 120, // fixed height to prevent jumps
+    justifyContent: "center",
   },
   rollButton: {
     backgroundColor: "#2c3e50",
@@ -334,51 +331,45 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
   },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 24,
-  },
-  modalContent: {
-    backgroundColor: "#fff",
-    borderRadius: 24,
-    padding: 32,
-    width: "100%",
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.25,
-    shadowRadius: 10,
-    elevation: 10,
-  },
-  modalTitle: {
-    fontSize: 14,
-    fontWeight: "bold",
-    color: "#7f8c8d",
-    marginBottom: 16,
-    letterSpacing: 1,
-  },
-  modalText: {
+  diceValueDisplay: {
     fontSize: 24,
     fontWeight: "bold",
     color: "#2c3e50",
+    marginBottom: 16,
+  },
+  taskContainer: {
+    width: "100%",
+    padding: 16,
+    alignItems: "center",
+    backgroundColor: "#fff",
+  },
+  taskTitle: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#e74c3c",
+    marginBottom: 8,
+    letterSpacing: 1,
+    textTransform: "uppercase",
+  },
+  taskText: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#2c3e50",
     textAlign: "center",
-    marginBottom: 32,
-    lineHeight: 32,
+    marginBottom: 16,
+    lineHeight: 24,
   },
   completeButton: {
     backgroundColor: "#e74c3c",
-    paddingVertical: 16,
+    paddingVertical: 12,
     paddingHorizontal: 32,
-    borderRadius: 16,
+    borderRadius: 24,
     width: "100%",
     alignItems: "center",
   },
   completeButtonText: {
     color: "#fff",
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "bold",
   },
 });
