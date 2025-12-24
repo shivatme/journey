@@ -83,7 +83,7 @@ export const useBoardGame = () => {
           !PENALTY_TILES[currentPos] &&
           task.category !== "final"
         ) {
-          const useCustom = Math.random() < 0.5;
+          const useCustom = Math.random() < 0.1;
           if (useCustom) {
             const randomDare =
               customDares[Math.floor(Math.random() * customDares.length)];
@@ -130,22 +130,8 @@ export const useBoardGame = () => {
     }
 
     if (PENALTY_TILES[currentPos]) {
-      // Logic for penalty: random fallback 1 step OR random up to 50 places
-      const isSevere = Math.random() < 0.3; // 50% chance for severe penalty
-      let penaltySteps = 1;
-
-      if (isSevere) {
-        penaltySteps = Math.floor(Math.random() * 50) + 1; // 1 to 50 steps back
-      }
-
-      let afterPenaltyPos =
-        currentPos -
-        (penaltySteps > 1 ? penaltySteps : -PENALTY_TILES[currentPos]);
+      let afterPenaltyPos = currentPos + PENALTY_TILES[currentPos];
       if (afterPenaltyPos < 1) afterPenaltyPos = 1;
-
-      // Update to use a specific message for what happened?
-      // ideally we would show a toast or modal saying "Oops! Fell back X steps"
-      // but for now just move them.
 
       setGameState((prev) => ({
         ...prev,
