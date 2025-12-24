@@ -191,7 +191,7 @@ export default function GameScreen() {
       <ScrollView style={styles.boardContainer}>{renderBoard()}</ScrollView>
 
       <View style={styles.controls}>
-        {gameState.currentTask ? (
+        {gameState.currentTask && (
           <View style={styles.taskContainer}>
             <Text style={styles.taskTitle}>
               {gameState.currentTask.category}
@@ -204,30 +204,31 @@ export default function GameScreen() {
               <Text style={styles.completeButtonText}>Complete Task</Text>
             </TouchableOpacity>
           </View>
-        ) : (
-          <>
-            {!!gameState.diceValue && (
-              <Text style={styles.diceValueDisplay}>
-                Rolled: {gameState.diceValue}
-              </Text>
-            )}
-            <TouchableOpacity
-              onPress={handleRoll}
-              disabled={gameState.status !== "playing"}
-              style={[
-                styles.rollButton,
-                gameState.status !== "playing" && styles.disabledButton,
-              ]}
-            >
-              <Animated.View style={diceAnimatedStyle}>
-                <Text style={styles.diceEmoji}>🎲</Text>
-              </Animated.View>
-              <Text style={styles.rollButtonText}>
-                {gameState.status === "moving" ? "Moving..." : "Roll Dice"}
-              </Text>
-            </TouchableOpacity>
-          </>
         )}
+        (
+        <>
+          {!!gameState.diceValue && (
+            <Text style={styles.diceValueDisplay}>
+              Rolled: {gameState.diceValue}
+            </Text>
+          )}
+          <TouchableOpacity
+            onPress={handleRoll}
+            disabled={gameState.status !== "playing"}
+            style={[
+              styles.rollButton,
+              gameState.status !== "playing" && styles.disabledButton,
+            ]}
+          >
+            <Animated.View style={diceAnimatedStyle}>
+              <Text style={styles.diceEmoji}>🎲</Text>
+            </Animated.View>
+            <Text style={styles.rollButtonText}>
+              {gameState.status === "moving" ? "Moving..." : "Roll Dice"}
+            </Text>
+          </TouchableOpacity>
+        </>
+        )
       </View>
     </SafeAreaView>
   );
