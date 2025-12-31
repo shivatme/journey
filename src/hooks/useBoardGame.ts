@@ -46,7 +46,7 @@ export const useBoardGame = () => {
   const rollDice = useCallback(() => {
     if (gameState.status !== "playing") return;
 
-    const roll = Math.floor(Math.random() * 6) + 1;
+    const roll = Math.floor(Math.random() * 12) + 1;
     const currentPlayer = gameState.currentPlayerIndex;
     const currentPos = gameState.positions[currentPlayer];
     let newPos = currentPos + roll;

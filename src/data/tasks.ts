@@ -300,9 +300,6 @@ const TASKS: GameTask[] = [
 ];
 
 export const getTaskForTile = (tileId: number): GameTask => {
-  const task = TASKS.find((t) => t.id === tileId);
-  if (!task) {
-    return { id: tileId, text: "Free Space! Relax.", category: "warmup" };
-  }
-  return task;
+  const randomIndex = Math.floor(Math.random() * TASKS.length);
+  return TASKS[randomIndex];
 };
