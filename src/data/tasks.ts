@@ -9,11 +9,11 @@ export interface GameTask {
 export const PENALTY_TILES: Record<number, number> = {
   6: -5,
   14: -10,
-  27: -5,
-  31: -5,
+  27: -12,
+  31: -9,
   39: -10,
   45: -7,
-  64: -3,
+  64: -13,
   73: -9,
   80: -18,
   86: -27,
@@ -28,7 +28,6 @@ const TASKS: GameTask[] = [
   { id: 3, text: "Take a shot", category: "warmup" },
   { id: 4, text: "Moan for 10 seconds", category: "warmup" },
   { id: 5, text: "Suck your partners thumb for a minute", category: "warmup" },
-  { id: 6, text: "Go back 5 spaces! (Penalty)", category: "warmup" }, // Penalty tile
   { id: 7, text: "Kiss your partner on the butt cheek", category: "warmup" },
   {
     id: 8,
@@ -58,7 +57,6 @@ const TASKS: GameTask[] = [
     text: "Get kissed on your chest",
     category: "personal",
   },
-  { id: 14, text: "Go back 10 spaces! (Penalty)", category: "personal" }, // Penalty
   { id: 15, text: "Get kissed on your abdomen", category: "personal" },
   { id: 16, text: "Get your arm pit licked", category: "personal" },
   {
@@ -109,7 +107,6 @@ const TASKS: GameTask[] = [
     text: "Take a shot",
     category: "bold",
   },
-  { id: 27, text: "Go back 5 spaces! (Penalty)", category: "bold" }, // Penalty
   {
     id: 28,
     text: "Smooch for a minute",
@@ -117,11 +114,7 @@ const TASKS: GameTask[] = [
   },
   { id: 29, text: "Bach gaya bete", category: "bold" },
   { id: 30, text: "Kiss your partner passionately.", category: "bold" },
-  {
-    id: 31,
-    text: "Go back 5 spaces! (Penalty)",
-    category: "bold",
-  },
+
   {
     id: 32,
     text: "Get licked in the ear",
@@ -142,7 +135,6 @@ const TASKS: GameTask[] = [
     text: "Kiss on pudding/kulfi",
     category: "bold",
   },
-  { id: 36, text: "Go back 10 spaces! (Penalty)", category: "bold" }, // Penalty
   {
     id: 37,
     text: "Give your partner a hickey.",
@@ -153,11 +145,7 @@ const TASKS: GameTask[] = [
     text: "Give a 3 minute massage",
     category: "bold",
   },
-  {
-    id: 39,
-    text: "Go back 10 spaces! (Penalty)",
-    category: "bold",
-  },
+
   { id: 40, text: "French kiss for 30 seconds.", category: "bold" },
 
   // 41-50: Final
@@ -177,7 +165,6 @@ const TASKS: GameTask[] = [
     text: "Let your partner lick your body for 2 minutes",
     category: "final",
   },
-  { id: 45, text: "Go back 7 spaces! (Penalty)", category: "final" },
   {
     id: 46,
     text: "Let your partner pin your hands and do stuff",
@@ -232,7 +219,6 @@ const TASKS: GameTask[] = [
   },
   { id: 62, text: "Take a shot", category: "bold" },
   { id: 63, text: "Twerk for 10 seconds.", category: "bold" },
-  { id: 64, text: "Go back 3 spaces! (Penalty)", category: "bold" },
   {
     id: 65,
     text: "Have an intimate stare session for a minute, dont speak",
@@ -253,14 +239,12 @@ const TASKS: GameTask[] = [
   { id: 70, text: "Get on your Knees and suck", category: "bold" },
   { id: 71, text: "Kiss your partner passionately", category: "bold" },
   { id: 72, text: "Bach gaya bete", category: "bold" },
-  { id: 73, text: "Go back 9 spaces! (Penalty)", category: "bold" },
   { id: 74, text: "Lick your partners back", category: "bold" },
   { id: 75, text: "Get licked by your partner on the back", category: "bold" },
   { id: 76, text: "Promise something for your future", category: "final" },
   { id: 77, text: "Say why this relationship matters.", category: "final" },
   { id: 78, text: "Bach gaya bete", category: "final" },
   { id: 79, text: "Hold hands tightly and kiss.", category: "final" },
-  { id: 80, text: "Go back 18 spaces! (Penalty)", category: "final" },
   { id: 81, text: "Say ‘thank you’ for something real.", category: "final" },
   {
     id: 82,
@@ -270,10 +254,8 @@ const TASKS: GameTask[] = [
   { id: 83, text: "Smile and stay silent for 10 seconds.", category: "final" },
   { id: 84, text: "Give them a massage for 2 minutes.", category: "final" },
   { id: 85, text: "Take a shot", category: "final" },
-  { id: 86, text: "Go back 27 spaces! (Penalty)", category: "final" },
   { id: 87, text: "Send them a nude", category: "final" },
   { id: 88, text: "Let them edge you", category: "final" },
-  { id: 89, text: "Go back 10 spaces! (Penalty)", category: "final" },
   { id: 90, text: "Make your partner feel special", category: "final" },
   { id: 91, text: "Hold hands until game ends.", category: "final" },
   { id: 92, text: "Dance together for a minute", category: "final" },
@@ -286,7 +268,6 @@ const TASKS: GameTask[] = [
   { id: 95, text: "Promise life together.", category: "final" },
   { id: 96, text: "Both take a shot", category: "final" },
   { id: 97, text: "Feed your partner with your mouth", category: "final" },
-  { id: 98, text: "Go back 23 spaces! (Penalty)", category: "final" },
   {
     id: 99,
     text: "Pour a shot for your partner with your mouth",

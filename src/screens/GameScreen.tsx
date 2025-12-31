@@ -205,7 +205,7 @@ export default function GameScreen() {
             </TouchableOpacity>
           </View>
         )}
-        (
+
         <>
           {!!gameState.diceValue && (
             <Text style={styles.diceValueDisplay}>
@@ -228,7 +228,6 @@ export default function GameScreen() {
             </Text>
           </TouchableOpacity>
         </>
-        )
       </View>
     </SafeAreaView>
   );

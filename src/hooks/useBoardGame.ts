@@ -98,7 +98,14 @@ export const useBoardGame = () => {
         return {
           ...prev,
           status: "task",
-          currentTask: task,
+          currentTask: PENALTY_TILES[currentPos]
+            ? {
+                ...task,
+                text:
+                  "Go back " + PENALTY_TILES[currentPos] + " spaces! (Penalty)",
+                category: "bold",
+              }
+            : task,
           targetPosition: null,
         };
       }
